@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Usuario{
+  id Int @id @default(autoincrement())
+  email String @unique 
+  password String
+  nombre String
+  apellido String 
+  direccion String
+  pedidos Pedido[]
+}
+
+model Categoria{
+  id Int @id @default(autoincrement())
+  nombre String
+  icono String
+  productos Producto[]
+}
+
+model Producto{
+  id Int @id @default(autoincrement())
+  nombre String
+  descripcion String
+  precio Float
+  stock Int
+  imagenUrl String
+  categoriaId Int
+  categoria Categoria @relation(fields: [categoriaId], references: [id])
+  ofertas Oferta[]
+  itemPedido ItemPedido[]
+}
+
+model Oferta {
+  id Int @id @default(autoincrement())
+  productoId Int
+  producto Producto @relation(fields: [productoId], references: [id])
+  precioOferta Float
+  fechaInicio DateTime
+  fechaFin DateTime
+}
+
+model Pedido{
+  id Int @id @default(autoincrement())
+  usuarioId Int
+  usuario Usuario @relation(fields:[usuarioId],references:[id])
+  fecha DateTime @default(now())
+  total Float
+  itemPedido ItemPedido[]
+}
+
+model ItemPedido{
+  id Int @id @default(autoincrement())
+  pedidoId Int
+  pedido Pedido @relation(fields: [pedidoId], references: [id])
+  productoId Int
+  producto Producto @relation(fields: [productoId], references: [id])
+  precioUnitario Float
+  cantidad Int
+}
