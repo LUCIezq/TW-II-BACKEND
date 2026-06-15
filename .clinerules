@@ -1,0 +1,297 @@
+Cada módulo es autónomo. Nunca crear carpetas globales controllers/, services/, repositories/.
+
+---
+
+## Arquitectura por capas — reglas estrictas
+
+### Router
+- Solo mapea rutas HTTP a métodos del controller.
+- Enchufa middlewares de validación y autenticación.
+- No contiene lógica.
+
+Ejemplo:
+router.post("/", validateSchema(createProductSchema), controller.create);
+router.get("/:id", authenticate, controller.getById);
+
+---
+
+### Controller
+- Extrae datos de req (body, params, query).
+- Llama al service.
+- Responde con res.status(X).json(...).
+- Nunca contiene lógica de negocio.
+- Siempre usa try/catch y delega errores con next(error).
+
+Ejemplo:
+create = async (req, res, next) => {
+  try {
+    const result = await this.service.create(req.body);
+    res.status(201).json({ success: true, data: result });
+  } catch (error) {
+    next(error);
+  }
+};
+
+---
+
+### Service
+- Contiene toda la lógica de negocio.
+- Valida reglas de dominio (stock, unicidad, permisos).
+- Lanza errores de dominio tipados (AppError o subclases).
+- No importa nada de Express (Request, Response, NextFunction).
+- No llama a Prisma directamente — usa repositories.
+- Siempre recibe y retorna DTOs, nunca entidades Prisma raw.
+
+Ejemplo:
+async create(dto) {
+  const existing = await this.repository.findByName(dto.name);
+  if (existing) throw new ProductAlreadyExistsError(dto.name);
+  const product = await this.repository.create(dto);
+  return this.toResponseDto(product);
+}
+
+---
+
+### Repository
+- Encapsula todo acceso a Prisma.
+- Retorna tipos de Prisma o null.
+- No contiene lógica de negocio.
+- No lanza errores de dominio.
+
+Ejemplo:
+async findById(id) {
+  return this.prisma.product.findUnique({ where: { id } });
+}
+
+---
+
+## DTOs
+
+- Usar interfaces TypeScript para DTOs de entrada y salida.
+- Los DTOs de salida nunca exponen campos sensibles (password, tokens internos).
+- El mapper de entidad a DTO vive en el Service como método privado toResponseDto.
+- Los tipos de entrada pueden inferirse desde schemas Zod con z.infer<>.
+
+Ejemplo:
+export interface CreateUserDto {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface UserResponseDto {
+  id: number;
+  name: string;
+  email: string;
+  createdAt: Date;
+}
+
+---
+
+## Validación con Zod
+
+- Todo input HTTP se valida con Zod antes de llegar al controller.
+- Los schemas viven en [modulo].schema.ts.
+- El middleware validateSchema aplica el schema y lanza AppError con code VALIDATION_ERROR si falla.
+- Nunca validar manualmente en el controller con ifs.
+
+Ejemplo:
+export const createProductSchema = z.object({
+  body: z.object({
+    name: z.string().min(2),
+    price: z.number().positive(),
+    stock: z.number().int().nonneg(),
+    categoryId: z.number().int(),
+  }),
+});
+
+---
+
+## Manejo de errores
+
+### AppError — base de todos los errores de dominio
+
+export class AppError extends Error {
+  public readonly statusCode: number;
+  public readonly code: string;
+  public readonly timestamp: string;
+
+  constructor(message: string, statusCode: number, code: string) {
+    super(message);
+    this.statusCode = statusCode;
+    this.code = code;
+    this.timestamp = new Date().toISOString();
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+### Errores de dominio por módulo
+
+Cada módulo tiene su archivo [modulo].errors.ts con clases específicas.
+
+Ejemplo:
+export class ProductNotFoundError extends AppError {
+  constructor(id: number) {
+    super(`Producto con id '${id}' no encontrado`, 404, "PRODUCT_NOT_FOUND");
+  }
+}
+
+export class InsufficientStockError extends AppError {
+  constructor(productId: number) {
+    super(`Stock insuficiente para el producto '${productId}'`, 409, "INSUFFICIENT_STOCK");
+  }
+}
+
+### Error middleware global
+
+Siempre registrado al final de app.ts, después de todas las rutas.
+
+export const errorHandler = (error, req, res, next) => {
+  if (error instanceof AppError) {
+    res.status(error.statusCode).json({
+      success: false,
+      error: {
+        code: error.code,
+        message: error.message,
+        timestamp: error.timestamp,
+      },
+    });
+    return;
+  }
+
+  console.error("Error inesperado:", error);
+  res.status(500).json({
+    success: false,
+    error: {
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Error interno del servidor.",
+      timestamp: new Date().toISOString(),
+    },
+  });
+};
+
+### Formato de respuesta de error (siempre)
+
+{
+  "success": false,
+  "error": {
+    "code": "PRODUCT_NOT_FOUND",
+    "message": "Producto con id '5' no encontrado",
+    "timestamp": "2026-06-14T12:00:00.000Z"
+  }
+}
+
+---
+
+## Formato de respuesta exitosa (siempre)
+
+{
+  "success": true,
+  "data": { ... }
+}
+
+Los controllers deben envolver siempre la respuesta en { success: true, data }.
+
+---
+
+## Dependency Injection
+
+Se usa inyección manual en app.ts. No usar variables globales ni singletons de servicios.
+
+Ejemplo:
+const prisma = new PrismaClient();
+const userRepository = new UserRepository(prisma);
+const userService = new UserService(userRepository);
+const userController = new UserController(userService);
+app.use("/api/users", createUserRouter(userController));
+
+---
+
+## Dominio del ecommerce
+
+### Entidades persistidas
+
+- User — cliente del sistema
+- Category — categoría de producto
+- Product — artículo a la venta (precio, stock, categoría)
+- Offer — descuento temporal (precioOferta, fechaInicio, fechaFin)
+- Order — pedido confirmado (usuario, fecha, total)
+- OrderItem — línea de pedido (producto, cantidad, precioUnitario)
+
+### Regla fundamental
+
+Persistir hechos. Calcular interpretaciones.
+
+Persistir: price, stock, quantity, date, unitPrice
+Calcular en runtime: discountPercentage, stockStatus, orderTotal
+
+### Carrito
+
+El carrito es estado temporal — no se persiste en la base de datos.
+El frontend (Angular) gestiona el carrito en localStorage.
+En el checkout, los CartItem[] se envían al backend.
+El backend los convierte en Order + OrderItem[] y los persiste.
+El backend valida stock en el momento del checkout.
+
+### Integridad histórica de pedidos
+
+OrderItem almacena unitPrice (precio al momento de la compra).
+Esto garantiza que cambios futuros en Product.price no afecten pedidos anteriores.
+
+---
+
+## Convenciones de código
+
+### Nombrado
+- Archivos: kebab-case → user.service.ts
+- Clases: PascalCase → UserService
+- Métodos y variables: camelCase → getUserById
+- Constantes de entorno: UPPER_SNAKE_CASE → JWT_SECRET
+- Codes de error: UPPER_SNAKE_CASE → "USER_NOT_FOUND"
+
+### TypeScript
+- Siempre strict: true en tsconfig.json
+- No usar any. Usar unknown si el tipo es incierto y luego narrowing.
+- Preferir interface para DTOs y contratos, type para uniones y aliases.
+- No usar ! (non-null assertion) salvo casos justificados con comentario.
+
+### Async
+- Siempre async/await. Nunca .then().catch() en código de producción.
+- Todo async en controllers va dentro de try/catch con next(error).
+
+---
+
+## Variables de entorno
+
+Centralizadas y tipadas en config/env.ts:
+
+export const env = {
+  PORT: Number(process.env.PORT) || 3000,
+  DATABASE_URL: process.env.DATABASE_URL!,
+  JWT_SECRET: process.env.JWT_SECRET!,
+  NODE_ENV: process.env.NODE_ENV || "development",
+};
+
+Nunca acceder a process.env directamente fuera de config/env.ts.
+
+---
+
+## Migraciones Prisma
+
+Crear migración: npx prisma migrate dev --name descripcion-del-cambio
+Aplicar migraciones: npx prisma migrate deploy
+Regenerar cliente: npx prisma generate
+
+---
+
+## Anti-patrones prohibidos
+
+- Lógica de negocio en controllers.
+- Llamadas a Prisma desde controllers o services directamente.
+- Retornar entidades Prisma raw al cliente sin mapear a DTO.
+- Importar Request/Response de Express en services.
+- console.log en producción.
+- Manejar errores en el controller con res.status(X).json() — siempre next(error).
+- Variables de entorno hardcodeadas — siempre desde config/env.ts.
+- Carpetas globales controllers/, services/, repositories/ — siempre por módulo.
+- Persistir datos calculables (porcentaje de descuento, estado de stock, totales).
