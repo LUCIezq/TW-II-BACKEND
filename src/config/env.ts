@@ -15,6 +15,5 @@ export const ENV = {
 
     JWT: {
         SECRET: env.get('JWT_SECRET').required().asString(),
-        EXPIRES_IN: env.get('JWT_EXPIRES_IN').default('7d').asString(),
     },
 };
