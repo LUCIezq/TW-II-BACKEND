@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { authService } from './auth.service';
 
 const loginSchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(1),
 });
 
@@ -16,7 +16,7 @@ const passwordSchema = z
     .regex(/[0-9]/, 'Debe contener al menos un número');
 
 const registerSchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: passwordSchema,
     nombre: z.string().min(1),
     apellido: z.string().min(1),
