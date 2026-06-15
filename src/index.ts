@@ -1,14 +1,15 @@
-import Express from "express";
-import { ENV } from "./config/env";
+import Express from 'express';
+import cors from 'cors';
+import { ENV } from './config/env';
+import { authRouter } from './modules/auth/auth.router';
 
 const app = Express();
 
-app.get("/", (req, res) => {
-    res.send("Hello, World!");
-});
+app.use(cors());
+app.use(Express.json());
 
-const PORT = ENV.PORT;
+app.use('/api/auth', authRouter);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(ENV.PORT, () => {
+    console.log(`Server running on port ${ENV.PORT}`);
 });
