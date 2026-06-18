@@ -9,7 +9,7 @@ export const ENV = {
         HOST: env.get('MYSQL_HOST').required().asString(),
         PORT: env.get('MYSQL_PORT').required().asPortNumber(),
         USER: env.get('MYSQL_USER').required().asString(),
-        PASSWORD: env.get('MYSQL_ROOT_PASSWORD').required().asString(),
+        PASSWORD: env.get('MYSQL_PASSWORD').required().asString(),
         NAME: env.get('MYSQL_DATABASE').required().asString(),
     },
 };
