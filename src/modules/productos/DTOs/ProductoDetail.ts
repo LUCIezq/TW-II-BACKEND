@@ -1,3 +1,5 @@
+import type { CategoriaDetail } from "../../categorias/DTOs/CategoriaDetail";
+
 export interface ProductoDetail {
     id: number,
     nombre: string,
@@ -6,5 +8,5 @@ export interface ProductoDetail {
     precio: number,
     stock: number,
     imagenUrl: string,
-    categoriaId: number
+    categoria: CategoriaDetail
 }

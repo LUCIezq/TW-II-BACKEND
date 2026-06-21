@@ -10,6 +10,6 @@ export const ProductoMapper = {
         precio: producto.precio,
         stock: producto.stock,
         imagenUrl: producto.imagenUrl,
-        categoriaId: producto.categoriaId
+        categoria: producto.categoria
     })
 }
