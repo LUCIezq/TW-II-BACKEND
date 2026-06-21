@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { prisma } from './lib/prisma';
+import { prisma } from '../src/lib/prisma';
 
 async function main() {
     const hashedPassword = await bcrypt.hash('Password123!', 10);
