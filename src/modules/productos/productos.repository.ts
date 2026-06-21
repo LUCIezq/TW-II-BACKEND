@@ -1,8 +1,9 @@
 import { prisma } from "../../lib/prisma";
+import type { Producto } from "./entities/ProductoEntity";
 
 export class ProductosRepository {
-    async getAll() {
-        return await prisma.producto.findMany({
+    async getAll(): Promise<Producto[]> {
+        return prisma.producto.findMany({
             include: {
                 categoria: true
             }
