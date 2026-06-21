@@ -153,7 +153,7 @@ docker compose down -v
 4. Ejecutar `docker compose up -d`.
 5. Ejecutar `npx prisma migrate deploy`.
 6. Ejecutar `npx prisma generate`.
-7. Ejecutar `npm run dev`.
+7. Correr seed de datos `npx prisma db seed`
+8. Ejecutar `npm run dev`.
 
 Si todos los pasos fueron correctos, el proyecto debería iniciar sin configuración adicional.
-# TW-II-BACKEND
