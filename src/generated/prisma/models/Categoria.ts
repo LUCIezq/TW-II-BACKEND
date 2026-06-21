@@ -38,18 +38,21 @@ export type CategoriaMinAggregateOutputType = {
   id: number | null
   nombre: string | null
   icono: string | null
+  slug: string | null
 }
 
 export type CategoriaMaxAggregateOutputType = {
   id: number | null
   nombre: string | null
   icono: string | null
+  slug: string | null
 }
 
 export type CategoriaCountAggregateOutputType = {
   id: number
   nombre: number
   icono: number
+  slug: number
   _all: number
 }
 
@@ -66,18 +69,21 @@ export type CategoriaMinAggregateInputType = {
   id?: true
   nombre?: true
   icono?: true
+  slug?: true
 }
 
 export type CategoriaMaxAggregateInputType = {
   id?: true
   nombre?: true
   icono?: true
+  slug?: true
 }
 
 export type CategoriaCountAggregateInputType = {
   id?: true
   nombre?: true
   icono?: true
+  slug?: true
   _all?: true
 }
 
@@ -171,6 +177,7 @@ export type CategoriaGroupByOutputType = {
   id: number
   nombre: string
   icono: string
+  slug: string
   _count: CategoriaCountAggregateOutputType | null
   _avg: CategoriaAvgAggregateOutputType | null
   _sum: CategoriaSumAggregateOutputType | null
@@ -200,6 +207,7 @@ export type CategoriaWhereInput = {
   id?: Prisma.IntFilter<"Categoria"> | number
   nombre?: Prisma.StringFilter<"Categoria"> | string
   icono?: Prisma.StringFilter<"Categoria"> | string
+  slug?: Prisma.StringFilter<"Categoria"> | string
   productos?: Prisma.ProductoListRelationFilter
 }
 
@@ -207,24 +215,27 @@ export type CategoriaOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   icono?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   productos?: Prisma.ProductoOrderByRelationAggregateInput
   _relevance?: Prisma.CategoriaOrderByRelevanceInput
 }
 
 export type CategoriaWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  slug?: string
   AND?: Prisma.CategoriaWhereInput | Prisma.CategoriaWhereInput[]
   OR?: Prisma.CategoriaWhereInput[]
   NOT?: Prisma.CategoriaWhereInput | Prisma.CategoriaWhereInput[]
   nombre?: Prisma.StringFilter<"Categoria"> | string
   icono?: Prisma.StringFilter<"Categoria"> | string
   productos?: Prisma.ProductoListRelationFilter
-}, "id">
+}, "id" | "slug">
 
 export type CategoriaOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   icono?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   _count?: Prisma.CategoriaCountOrderByAggregateInput
   _avg?: Prisma.CategoriaAvgOrderByAggregateInput
   _max?: Prisma.CategoriaMaxOrderByAggregateInput
@@ -239,11 +250,13 @@ export type CategoriaScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Categoria"> | number
   nombre?: Prisma.StringWithAggregatesFilter<"Categoria"> | string
   icono?: Prisma.StringWithAggregatesFilter<"Categoria"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"Categoria"> | string
 }
 
 export type CategoriaCreateInput = {
   nombre: string
   icono: string
+  slug: string
   productos?: Prisma.ProductoCreateNestedManyWithoutCategoriaInput
 }
 
@@ -251,12 +264,14 @@ export type CategoriaUncheckedCreateInput = {
   id?: number
   nombre: string
   icono: string
+  slug: string
   productos?: Prisma.ProductoUncheckedCreateNestedManyWithoutCategoriaInput
 }
 
 export type CategoriaUpdateInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   productos?: Prisma.ProductoUpdateManyWithoutCategoriaNestedInput
 }
 
@@ -264,6 +279,7 @@ export type CategoriaUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   productos?: Prisma.ProductoUncheckedUpdateManyWithoutCategoriaNestedInput
 }
 
@@ -271,17 +287,20 @@ export type CategoriaCreateManyInput = {
   id?: number
   nombre: string
   icono: string
+  slug: string
 }
 
 export type CategoriaUpdateManyMutationInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type CategoriaUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type CategoriaOrderByRelevanceInput = {
@@ -294,6 +313,7 @@ export type CategoriaCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   icono?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
 }
 
 export type CategoriaAvgOrderByAggregateInput = {
@@ -304,12 +324,14 @@ export type CategoriaMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   icono?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
 }
 
 export type CategoriaMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nombre?: Prisma.SortOrder
   icono?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
 }
 
 export type CategoriaSumOrderByAggregateInput = {
@@ -338,12 +360,14 @@ export type CategoriaUpdateOneRequiredWithoutProductosNestedInput = {
 export type CategoriaCreateWithoutProductosInput = {
   nombre: string
   icono: string
+  slug: string
 }
 
 export type CategoriaUncheckedCreateWithoutProductosInput = {
   id?: number
   nombre: string
   icono: string
+  slug: string
 }
 
 export type CategoriaCreateOrConnectWithoutProductosInput = {
@@ -365,12 +389,14 @@ export type CategoriaUpdateToOneWithWhereWithoutProductosInput = {
 export type CategoriaUpdateWithoutProductosInput = {
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 export type CategoriaUncheckedUpdateWithoutProductosInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   nombre?: Prisma.StringFieldUpdateOperationsInput | string
   icono?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
 
@@ -408,6 +434,7 @@ export type CategoriaSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   id?: boolean
   nombre?: boolean
   icono?: boolean
+  slug?: boolean
   productos?: boolean | Prisma.Categoria$productosArgs<ExtArgs>
   _count?: boolean | Prisma.CategoriaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["categoria"]>
@@ -418,9 +445,10 @@ export type CategoriaSelectScalar = {
   id?: boolean
   nombre?: boolean
   icono?: boolean
+  slug?: boolean
 }
 
-export type CategoriaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "icono", ExtArgs["result"]["categoria"]>
+export type CategoriaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nombre" | "icono" | "slug", ExtArgs["result"]["categoria"]>
 export type CategoriaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productos?: boolean | Prisma.Categoria$productosArgs<ExtArgs>
   _count?: boolean | Prisma.CategoriaCountOutputTypeDefaultArgs<ExtArgs>
@@ -435,6 +463,7 @@ export type $CategoriaPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     id: number
     nombre: string
     icono: string
+    slug: string
   }, ExtArgs["result"]["categoria"]>
   composites: {}
 }
@@ -808,6 +837,7 @@ export interface CategoriaFieldRefs {
   readonly id: Prisma.FieldRef<"Categoria", 'Int'>
   readonly nombre: Prisma.FieldRef<"Categoria", 'String'>
   readonly icono: Prisma.FieldRef<"Categoria", 'String'>
+  readonly slug: Prisma.FieldRef<"Categoria", 'String'>
 }
     
 
