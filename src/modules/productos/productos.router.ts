@@ -9,5 +9,6 @@ const productosService = new ProductosService(productosRepository);
 const productosController = new ProductosController(productosService);
 
 productosRouter.get("/", productosController.getAll);
+productosRouter.get("/:slug", productosController.getProductBySlug);
 
 export default productosRouter;
