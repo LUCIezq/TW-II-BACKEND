@@ -6,13 +6,14 @@ async function main() {
 
     await prisma.usuario.upsert({
         where: { email: 'test@test.com' },
-        update: {},
+        update: { emailVerificado: true },
         create: {
             email: 'test@test.com',
             password: hashedPassword,
             nombre: 'Test',
             apellido: 'User',
             direccion: 'Calle Falsa 123',
+            emailVerificado: true,
         },
     });
 
