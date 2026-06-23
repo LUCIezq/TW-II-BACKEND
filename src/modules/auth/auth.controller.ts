@@ -115,6 +115,22 @@ export class AuthController {
         }
     };
 
+    resendVerification = async (req: Request, res: Response): Promise<void> => {
+        const result = forgotPasswordSchema.safeParse(req.body);
+        if (!result.success) {
+            res.status(400).json({ error: 'Datos inválidos', details: result.error.flatten() });
+            return;
+        }
+
+        try {
+            await this.authService.resendVerification(result.data.email);
+        } catch (error) {
+            console.error(error);
+        }
+
+        res.json({ message: 'Si el email está registrado y pendiente de verificación, te enviamos un nuevo link' });
+    };
+
     forgotPassword = async (req: Request, res: Response): Promise<void> => {
         const result = forgotPasswordSchema.safeParse(req.body);
         if (!result.success) {

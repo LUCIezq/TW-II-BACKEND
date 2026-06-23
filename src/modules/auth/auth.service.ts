@@ -92,6 +92,14 @@ export class AuthService {
         await this.authRepository.markEmailAsVerified(tokenAccion.usuarioId);
     }
 
+    async resendVerification(email: string): Promise<void> {
+        const user = await this.authRepository.findByEmail(email);
+        if (!user || user.emailVerificado) return;
+
+        const token = await this.generarTokenAccion(user.id, TipoTokenAccion.VERIFICACION_EMAIL, VERIFICACION_EXPIRA_MS);
+        await this.emailService.enviarVerificacionEmail(user.email, token);
+    }
+
     async requestPasswordReset(email: string): Promise<void> {
         const user = await this.authRepository.findByEmail(email);
         // Si el email no existe, no se hace nada — el controller responde 200
