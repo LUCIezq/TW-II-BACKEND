@@ -16,4 +16,11 @@ export const ENV = {
     JWT: {
         SECRET: env.get('JWT_SECRET').required().asString(),
     },
+
+    EMAIL: {
+        GMAIL_USER: env.get('GMAIL_USER').required().asString(),
+        GMAIL_APP_PASSWORD: env.get('GMAIL_APP_PASSWORD').required().asString(),
+    },
+
+    FRONTEND_URL: env.get('FRONTEND_URL').required().asString(),
 };
