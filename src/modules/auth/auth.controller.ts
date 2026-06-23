@@ -42,7 +42,10 @@ export class AuthController {
         try {
             const data = await this.authService.login(result.data.email, result.data.password);
             res.json(data);
-        } catch {
+        } catch (error) {
+            // Se loguea server-side, pero al cliente siempre se le responde lo mismo
+            // (no hay que filtrar si fue error de DB o credenciales inválidas)
+            console.error(error);
             res.status(401).json({ error: 'Credenciales inválidas' });
         }
     };
@@ -62,6 +65,7 @@ export class AuthController {
                 res.status(409).json({ error: 'El email ya está registrado' });
                 return;
             }
+            console.error(error);
             res.status(500).json({ error: 'Error interno del servidor' });
         }
     };
