@@ -69,6 +69,21 @@ async function main() {
             categoriaId: notebooks.id,
         },
     });
+    await prisma.producto.upsert({
+        where: {
+            slug: 'macbook-air-m5',
+        },
+        update: {},
+        create: {
+            nombre: 'MacBook Air M5',
+            slug: 'macbook-air-m5',
+            descripcion: 'Notebook Apple con chip M5 y 16GB RAM',
+            precio: 2499999,
+            stock: 0,
+            imagenUrl: '/images/macbook-air-m5.jpg',
+            categoriaId: notebooks.id,
+        },
+    });
 
     await prisma.producto.upsert({
         where: {
