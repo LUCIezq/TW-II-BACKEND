@@ -21,12 +21,14 @@ model Categoria{
   id Int @id @default(autoincrement())
   nombre String
   icono String
+  slug String @unique
   productos Producto[]
 }
 
 model Producto{
   id Int @id @default(autoincrement())
   nombre String
+  slug String @unique
   descripcion String
   precio Float
   stock Int

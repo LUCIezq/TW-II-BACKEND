@@ -90,7 +90,8 @@ export type UsuarioScalarFieldEnum = (typeof UsuarioScalarFieldEnum)[keyof typeo
 export const CategoriaScalarFieldEnum = {
   id: 'id',
   nombre: 'nombre',
-  icono: 'icono'
+  icono: 'icono',
+  slug: 'slug'
 } as const
 
 export type CategoriaScalarFieldEnum = (typeof CategoriaScalarFieldEnum)[keyof typeof CategoriaScalarFieldEnum]
@@ -99,6 +100,7 @@ export type CategoriaScalarFieldEnum = (typeof CategoriaScalarFieldEnum)[keyof t
 export const ProductoScalarFieldEnum = {
   id: 'id',
   nombre: 'nombre',
+  slug: 'slug',
   descripcion: 'descripcion',
   precio: 'precio',
   stock: 'stock',
@@ -162,7 +164,8 @@ export type UsuarioOrderByRelevanceFieldEnum = (typeof UsuarioOrderByRelevanceFi
 
 export const CategoriaOrderByRelevanceFieldEnum = {
   nombre: 'nombre',
-  icono: 'icono'
+  icono: 'icono',
+  slug: 'slug'
 } as const
 
 export type CategoriaOrderByRelevanceFieldEnum = (typeof CategoriaOrderByRelevanceFieldEnum)[keyof typeof CategoriaOrderByRelevanceFieldEnum]
@@ -170,6 +173,7 @@ export type CategoriaOrderByRelevanceFieldEnum = (typeof CategoriaOrderByRelevan
 
 export const ProductoOrderByRelevanceFieldEnum = {
   nombre: 'nombre',
+  slug: 'slug',
   descripcion: 'descripcion',
   imagenUrl: 'imagenUrl'
 } as const

@@ -1,0 +1,18 @@
+import type { ProductoDetail } from "./DTOs/ProductoDetail";
+import type { ProductosRepository } from "./productos.repository";
+import { ProductoMapper } from "./productos.mapper";
+import type { Producto } from "./entities/ProductoEntity";
+
+export class ProductosService {
+    constructor(private readonly productosRepository: ProductosRepository) { }
+
+    async getAll(): Promise<ProductoDetail[]> {
+        const productos = await this.productosRepository.getAll();
+        return productos.map(p => ProductoMapper.toDetail(p));
+    }
+
+    async getProductBySlug(slug: string): Promise<Producto | null> {
+        const product = await this.productosRepository.getProductBySlug(slug);
+        return product;
+    }
+}
