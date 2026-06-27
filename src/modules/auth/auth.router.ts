@@ -7,3 +7,7 @@ export const authRouter = Router();
 
 authRouter.post('/login', authController.login);
 authRouter.post('/register', authController.register);
+authRouter.get('/verificar', authController.verificarEmail);
+authRouter.post('/resend-verification', authController.resendVerification);
+authRouter.post('/forgot-password', authController.forgotPassword);
+authRouter.post('/reset-password', authController.resetPassword);
