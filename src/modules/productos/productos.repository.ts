@@ -3,8 +3,13 @@ import type { Producto } from "./entities/ProductoEntity";
 
 export class ProductosRepository {
 
-    async getAll(): Promise<Producto[]> {
+    async getAll(categoria?: string): Promise<Producto[]> {
         return prisma.producto.findMany({
+            where: categoria ? {
+                categoria: {
+                    slug: categoria
+                }
+            } : undefined,
             include: {
                 categoria: true
             }

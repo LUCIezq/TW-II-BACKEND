@@ -6,8 +6,9 @@ export class ProductosController {
 
     public constructor(private readonly productosService: ProductosService) { }
 
-    getAll = async (_req: Request, res: Response): Promise<void> => {
-        const productos = await this.productosService.getAll();
+    getAll = async (req: Request, res: Response): Promise<void> => {
+        const categoria = req.query.categoria as string | undefined;
+        const productos = await this.productosService.getAll(categoria);
         res.status(200).json(productos);
     }
 
@@ -15,7 +16,7 @@ export class ProductosController {
         const result = ProductBySlugSchema.safeParse(req.params);
 
         if (!result.success) {
-            res.status(400).json({ message: "Parámetros inválidos", errors: result.error });
+            res.status(400).json({ message: "Parametros invalidos", errors: result.error });
             return;
         }
 
