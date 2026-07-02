@@ -18,9 +18,9 @@ export class AuthService {
         private emailService: EmailService,
     ) {}
 
-    private signToken(user: { id: number; email: string; nombre: string; apellido: string; direccion: string }) {
+    private signToken(user: { id: number; email: string; nombre: string; apellido: string; direccion: string; rol: string }) {
         return jwt.sign(
-            { sub: user.id, email: user.email, nombre: user.nombre, apellido: user.apellido, direccion: user.direccion },
+            { sub: user.id, email: user.email, nombre: user.nombre, apellido: user.apellido, direccion: user.direccion, rol: user.rol },
             ENV.JWT.SECRET,
             { expiresIn: SIETE_DIAS_EN_SEGUNDOS },
         );

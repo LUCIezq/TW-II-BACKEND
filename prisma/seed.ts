@@ -14,6 +14,21 @@ async function main() {
             apellido: 'User',
             direccion: 'Calle Falsa 123',
             emailVerificado: true,
+            rol: 'CLIENTE',
+        },
+    });
+
+    await prisma.usuario.upsert({
+        where: { email: 'admin@admin.com' },
+        update: { emailVerificado: true },
+        create: {
+            email: 'admin@admin.com',
+            password: hashedPassword,
+            nombre: 'Admin',
+            apellido: 'User',
+            direccion: 'Calle Falsa 123',
+            emailVerificado: true,
+            rol: 'ADMIN',
         },
     });
 

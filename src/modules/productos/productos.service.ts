@@ -16,4 +16,16 @@ export class ProductosService {
         const product = await this.productosRepository.getProductBySlug(slug);
         return product;
     }
+
+        async crearProducto(datos: any) {
+        return await this.productosRepository.crearProducto(datos);
+    }
+
+    async actualizarProducto(id: number, datos: any) {
+        return await this.productosRepository.actualizarProducto(id, datos);
+    }
+
+    async eliminarProducto(id: number) {
+        return await this.productosRepository.eliminarProducto(id);
+    }
 }

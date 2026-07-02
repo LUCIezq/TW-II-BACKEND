@@ -17,6 +17,7 @@ model Usuario{
   emailVerificado Boolean @default(false)
   pedidos Pedido[]
   tokensAccion TokenAccion[]
+  rol String @default("CLIENTE") 
 }
 
 enum TipoTokenAccion {

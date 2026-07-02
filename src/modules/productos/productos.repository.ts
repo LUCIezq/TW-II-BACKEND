@@ -26,4 +26,22 @@ export class ProductosRepository {
             }
         });
     }
+    async crearProducto(datos: any) {
+        return await prisma.producto.create({
+            data: datos
+        });
+    }
+
+    async actualizarProducto(id: number, datos: any) {
+        return await prisma.producto.update({
+            where: { id: id },
+            data: datos
+        });
+    }
+
+    async eliminarProducto(id: number) {
+        return await prisma.producto.delete({
+            where: { id: id }
+        });
+    }
 }
