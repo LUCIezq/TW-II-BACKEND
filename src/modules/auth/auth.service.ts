@@ -6,6 +6,7 @@ import { TipoTokenAccion } from '../../generated/prisma/client';
 import type { EmailService } from '../email/email.service';
 import type { AuthRepository } from './auth.repository';
 import type { TokenAccionRepository } from './token-accion.repository';
+import { AuthMapper } from './auth.mapper';
 
 const SIETE_DIAS_EN_SEGUNDOS = 60 * 60 * 24 * 7;
 const VERIFICACION_EXPIRA_MS = 24 * 60 * 60 * 1000;
@@ -55,8 +56,7 @@ export class AuthService {
 
         if (!user.emailVerificado) throw new Error('EMAIL_NO_VERIFICADO');
 
-        const { password: _pw, ...userWithoutPassword } = user;
-        return { token: this.signToken(user), user: userWithoutPassword };
+        return { token: this.signToken(user), user: AuthMapper.toDTO(user) };
     }
 
     async register(data: { email: string; password: string; nombre: string; apellido: string; direccion: string }) {
@@ -76,8 +76,7 @@ export class AuthService {
 
         // No se devuelve token de sesión: la cuenta queda sin verificar hasta
         // que el usuario haga clic en el link del email.
-        const { password: _pw, ...userWithoutPassword } = user;
-        return { user: userWithoutPassword };
+        return { user: AuthMapper.toDTO(user) };
     }
 
     async verifyEmail(token: string): Promise<void> {
