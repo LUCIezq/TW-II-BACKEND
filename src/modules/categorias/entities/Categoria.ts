@@ -1,4 +1,4 @@
-type Categoria = {
+export type Categoria = {
     id: number;
     nombre: string;
     slug: string;

@@ -1,10 +1,12 @@
-import type { Categoria } from "../../generated/prisma/browser";
+import type { CategoriaDetail } from "./DTOs/CategoriaDetail";
 import type { CategoriaRepository } from "./categoria.repository";
+import { CategoriaMapper } from "./categoria.mapper";
 
 export class CategoriaService {
     constructor(private readonly categoriaRepository: CategoriaRepository) { }
 
-    getCategorias = (): Promise<Categoria[]> => {
-        return this.categoriaRepository.getCategorias();
+    async getCategorias(): Promise<CategoriaDetail[]> {
+        const categorias = await this.categoriaRepository.getCategorias();
+        return categorias.map(CategoriaMapper.toDetail);
     }
 }
