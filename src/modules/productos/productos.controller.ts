@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import type { ProductosService } from "./productos.service";
 import { ProductBySlugSchema } from "./schemas/ProductBySlug";
+import type ProductFilter from "./interfaces/ProductFilter";
 
 export class ProductosController {
 
@@ -8,8 +9,11 @@ export class ProductosController {
 
     getAll = async (req: Request, res: Response): Promise<void> => {
         try {
-            const categoria = req.query.categoria as string | undefined;
-            const productos = await this.productosService.getAll(categoria);
+            const filters: ProductFilter = {
+                nombre: req.query.nombre as string,
+                categoriaId: req.query.categoria as string,
+            };
+            const productos = await this.productosService.getAll(filters);
             res.status(200).json(productos);
         } catch (error) {
             console.error(error);
@@ -65,6 +69,7 @@ export class ProductosController {
         try {
             const id = parseInt(req.params.id);
             await this.productosService.eliminarProducto(id);
+            // 204 significa "No Content", es el código ideal cuando borramos algo con éxito
             res.status(204).send();
         } catch (error) {
             console.error(error);

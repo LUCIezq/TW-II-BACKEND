@@ -1,10 +1,17 @@
+import type { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
+import type ProductFilter from "./interfaces/ProductFilter";
 
 export class ProductosRepository {
 
-    getAll(categoria?: string) {
+    getAll(filters: ProductFilter) {
+        const where: Prisma.ProductoWhereInput = {};
+
+        if (filters.nombre) where.nombre = { contains: filters.nombre };
+        if (filters.categoriaId) where.categoriaId = Number(filters.categoriaId);
+
         return prisma.producto.findMany({
-            ...(categoria ? { where: { categoria: { slug: categoria } } } : {}),
+            where,
             include: { categoria: true },
         });
     }
