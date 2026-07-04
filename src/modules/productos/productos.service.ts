@@ -1,3 +1,4 @@
+import type { Prisma } from "../../generated/prisma/client";
 import type { ProductoDetail } from "./DTOs/ProductoDetail";
 import type { ProductosRepository } from "./productos.repository";
 import { ProductoMapper } from "./productos.mapper";
@@ -18,7 +19,11 @@ export class ProductosService {
     constructor(private readonly productosRepository: ProductosRepository) { }
 
     async getAll(filters: ProductFilter): Promise<ProductoDetail[]> {
-        const productos = await this.productosRepository.getAll(filters);
+        const where: Prisma.ProductoWhereInput = {};
+        if (filters.nombre) where.nombre = { contains: filters.nombre };
+        if (filters.categoriaId) where.categoriaId = Number(filters.categoriaId);
+
+        const productos = await this.productosRepository.getAll(where);
         return productos.map(p => ProductoMapper.toDetail(p));
     }
 
