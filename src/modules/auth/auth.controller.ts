@@ -24,7 +24,6 @@ const registerSchema = z.object({
     nombre: z.string().min(1),
     apellido: z.string().min(1),
     direccion: z.string().min(1),
-    rol: z.string().min(1),
 });
 
 const verificarEmailSchema = z.object({
