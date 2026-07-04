@@ -1,19 +1,22 @@
+import type { Prisma } from "../../generated/prisma/client";
 import { prisma } from "../../lib/prisma";
 import type { Producto } from "./entities/ProductoEntity";
+import type ProductFilter from "./interfaces/ProductFilter";
 
 export class ProductosRepository {
 
-    async getAll(categoria?: string): Promise<Producto[]> {
+    async getAll(filters: ProductFilter): Promise<Producto[]> {
+        const where: Prisma.ProductoWhereInput = {};
+
+        if (filters.nombre) where.nombre = { contains: filters.nombre };
+        if (filters.categoriaId) where.categoriaId = Number(filters.categoriaId);
+
         return prisma.producto.findMany({
-            where: categoria ? {
-                categoria: {
-                    slug: categoria
-                }
-            } : undefined,
+            where: where,
             include: {
                 categoria: true
             }
-        });
+        })
     }
 
     async getProductBySlug(slug: string): Promise<Producto | null> {
