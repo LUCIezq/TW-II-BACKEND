@@ -12,11 +12,11 @@ export class PedidosRepository {
                     where: { id: item.productoId }
                 });
                 if (!producto) {
-                    throw new Error(`El producto ID ${item.productoId} no existe.`);
+                    throw new Error('PRODUCTO_NO_ENCONTRADO');
                 }
-                
+
                 if (producto.stock < item.cantidad) {
-                    throw new Error(`Sin stock suficiente para: ${producto.nombre}. Quedan ${producto.stock}`);
+                    throw new Error('SIN_STOCK');
                 }
                 await tx.producto.update({
                     where: { id: item.productoId },

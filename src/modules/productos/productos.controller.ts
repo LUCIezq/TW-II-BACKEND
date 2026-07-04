@@ -7,38 +7,46 @@ export class ProductosController {
     public constructor(private readonly productosService: ProductosService) { }
 
     getAll = async (req: Request, res: Response): Promise<void> => {
-        const categoria = req.query.categoria as string | undefined;
-        const productos = await this.productosService.getAll(categoria);
-        res.status(200).json(productos);
+        try {
+            const categoria = req.query.categoria as string | undefined;
+            const productos = await this.productosService.getAll(categoria);
+            res.status(200).json(productos);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error al obtener los productos' });
+        }
     }
 
     getProductBySlug = async (req: Request, res: Response): Promise<void> => {
         const result = ProductBySlugSchema.safeParse(req.params);
 
         if (!result.success) {
-            res.status(400).json({ message: "Parametros invalidos", errors: result.error });
+            res.status(400).json({ error: 'Parámetros inválidos' });
             return;
         }
 
-        const { slug } = result.data;
-        const product = await this.productosService.getProductBySlug(slug);
+        try {
+            const product = await this.productosService.getProductBySlug(result.data.slug);
 
-        if (!product) {
-            res.status(404).json({ message: "Producto no encontrado" });
-            return;
+            if (!product) {
+                res.status(404).json({ error: 'Producto no encontrado' });
+                return;
+            }
+
+            res.status(200).json(product);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: 'Error al obtener el producto' });
         }
-
-        res.status(200).json(product);
     }
 
     crear = async (req: Request, res: Response): Promise<void> => {
         try {
-            // Mandamos todo el JSON que nos envía Angular directo al servicio
             const nuevoProducto = await this.productosService.crearProducto(req.body);
-            res.status(201).json(nuevoProducto); // 201: Created
+            res.status(201).json(nuevoProducto);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: "Error al crear el producto" });
+            res.status(500).json({ error: 'Error al crear el producto' });
         }
     }
 
@@ -46,10 +54,10 @@ export class ProductosController {
         try {
             const id = parseInt(req.params.id);
             const productoActualizado = await this.productosService.actualizarProducto(id, req.body);
-            res.status(200).json(productoActualizado); // 200: OK
+            res.status(200).json(productoActualizado);
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: "Error al actualizar el producto" });
+            res.status(500).json({ error: 'Error al actualizar el producto' });
         }
     }
 
@@ -57,11 +65,10 @@ export class ProductosController {
         try {
             const id = parseInt(req.params.id);
             await this.productosService.eliminarProducto(id);
-            // 204 significa "No Content", es el código ideal cuando borramos algo con éxito
-            res.status(204).send(); 
+            res.status(204).send();
         } catch (error) {
             console.error(error);
-            res.status(500).json({ error: "Error al eliminar el producto" });
+            res.status(500).json({ error: 'Error al eliminar el producto' });
         }
     }
 }
