@@ -4,6 +4,16 @@ import { ProductoMapper } from "./productos.mapper";
 import type { Producto } from "./entities/ProductoEntity";
 import type ProductFilter from "./interfaces/ProductFilter";
 
+function generarSlug(texto: string): string {
+    return texto
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+}
+
 export class ProductosService {
     constructor(private readonly productosRepository: ProductosRepository) { }
 
@@ -18,7 +28,13 @@ export class ProductosService {
     }
 
     async crearProducto(datos: any) {
-        return await this.productosRepository.crearProducto(datos);
+        const baseSlug = generarSlug(datos.nombre);
+        const existe = await this.productosRepository.getProductBySlug(baseSlug);
+        const slug = existe
+            ? `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`
+            : baseSlug;
+
+        return this.productosRepository.crearProducto({ ...datos, slug });
     }
 
     async actualizarProducto(id: number, datos: any) {
