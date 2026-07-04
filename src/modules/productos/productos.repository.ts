@@ -1,31 +1,21 @@
 import { prisma } from "../../lib/prisma";
-import type { Producto } from "./entities/ProductoEntity";
 
 export class ProductosRepository {
 
-    async getAll(categoria?: string): Promise<Producto[]> {
+    getAll(categoria?: string) {
         return prisma.producto.findMany({
-            where: categoria ? {
-                categoria: {
-                    slug: categoria
-                }
-            } : undefined,
-            include: {
-                categoria: true
-            }
+            ...(categoria ? { where: { categoria: { slug: categoria } } } : {}),
+            include: { categoria: true },
         });
     }
 
-    async getProductBySlug(slug: string): Promise<Producto | null> {
+    getProductBySlug(slug: string) {
         return prisma.producto.findUnique({
-            where: {
-                slug
-            },
-            include: {
-                categoria: true
-            }
+            where: { slug },
+            include: { categoria: true },
         });
     }
+
     async crearProducto(datos: any) {
         return await prisma.producto.create({
             data: datos
