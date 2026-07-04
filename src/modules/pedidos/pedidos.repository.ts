@@ -1,71 +1,55 @@
 import { prisma } from "../../lib/prisma";
 
-export class PedidosRepository {
-    
- async crearPedido(datosPedido: any) {
-        
-        return await prisma.$transaction(async (tx) => {
-            
-            for (const item of datosPedido.items) {
-                
-                const producto = await tx.producto.findUnique({
-                    where: { id: item.productoId }
-                });
-                if (!producto) {
-                    throw new Error('PRODUCTO_NO_ENCONTRADO');
-                }
+type ItemPedidoInput = {
+    productoId: number;
+    precioUnitario: number;
+    cantidad: number;
+};
 
-                if (producto.stock < item.cantidad) {
-                    throw new Error('SIN_STOCK');
-                }
+export class PedidosRepository {
+
+    buscarProductoPorId(id: number) {
+        return prisma.producto.findUnique({ where: { id } });
+    }
+
+    async insertarPedidoConItems(usuarioId: number, total: number, items: ItemPedidoInput[]) {
+        return prisma.$transaction(async (tx) => {
+            for (const item of items) {
                 await tx.producto.update({
                     where: { id: item.productoId },
-                    data: { stock: producto.stock - item.cantidad }
+                    data: { stock: { decrement: item.cantidad } },
                 });
             }
-            const nuevoPedido = await tx.pedido.create({
+            return tx.pedido.create({
                 data: {
-                    usuarioId: datosPedido.usuarioId,
-                    total: datosPedido.total,
-                    itemPedido: {
-                        create: datosPedido.items
-                    }
-                }
+                    usuarioId,
+                    total,
+                    itemPedido: { create: items },
+                },
             });
-            return nuevoPedido;
         });
     }
 
     async obtenerPedidosPorUsuario(usuarioId: number) {
-        return await prisma.pedido.findMany({
-            where: {
-                usuarioId: usuarioId
-            },
+        return prisma.pedido.findMany({
+            where: { usuarioId },
             include: {
                 itemPedido: {
-                    include: {
-                        producto: true
-                    }
-                }
+                    include: { producto: true },
+                },
             },
-            orderBy: {
-                fecha: 'desc' // Los más nuevos primero
-            }
-        });
-}
-  async obtenerPedidoPorId(pedidoId: number) {
-        return await prisma.pedido.findUnique({
-            where: {
-                id: pedidoId
-            },
-            include: {
-                itemPedido: {
-                    include: {
-                        producto: true
-                    }
-                }
-            }
+            orderBy: { fecha: 'desc' },
         });
     }
 
+    async obtenerPedidoPorId(pedidoId: number) {
+        return prisma.pedido.findUnique({
+            where: { id: pedidoId },
+            include: {
+                itemPedido: {
+                    include: { producto: true },
+                },
+            },
+        });
+    }
 }
